@@ -24,6 +24,7 @@ Process:
 
 
 Challenges:
+
 -There is no public Criterion Channel API, VHX tv api might work? includes all the extras though too
 
 -Letterboxd API is closed beta, need to send what I have so far
