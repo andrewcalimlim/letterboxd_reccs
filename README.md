@@ -1,7 +1,9 @@
 # Letterboxd Reccs
 
 A reccomendation algorithm for Letterboxd and Criterion Channel users.
+
 http://letterboxd.com/
+
 http://criterion.com/channel
 
 Process:
