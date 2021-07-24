@@ -1,11 +1,31 @@
+#####
+#
+# Name: Andrew Calimlim
+# UNI: amc2391
+# Class: COMS 4901
+# Date: 23 Jul 2021
+#
+#####
+
 import csv
 import os
 import numpy as np
 
-###
-# Parses csv file into an actual dictionary of ratings with unique film title (year) keys
-# returns a dictionary
-###
+#####
+#
+# Input:
+# A csv file name 
+# 
+# Function: 
+# Parses file by commas
+# into an actual dictionary of ratings with unique film title (year) keys
+# Overwrites key values with most recent ratings since csv file is ordered by date
+# 
+# Output:
+# Dictionary of ratings
+#
+#####
+
 def getRatingsDict(file_name):
     ratings = {}
 
@@ -39,22 +59,31 @@ def getRatingsDict(file_name):
     
     return ratings
 
-###
-# Given a file path of csv files and specifying which csv file is "you"
+######
+#
+# Input:
+# A file path of csv files
+#
+#
+# Function:
 # turns the csv files into an alphabetized matrix of ratings
 # each user is a row, and each column is a film
 # ratings are from 1-10, 0 indicates unseen (unrated viewings don't appear in ratings)
 # how are we supposed to know how you feel about a movie without a rating???
 #
-# returns two matrices, one with all other users' ratings
-# the other is "your" ratings
-###
+#
+# Output:
+# - An (incomplete) matrix of all ratings per person
+# - A dictionary indicate row, user correspondence
+# - An alphabetized list of all films (column, film title correspondence)
+#
+######
 
-def getMatrices(fp, myfile):
+def getMatrices(fp):
+
     all_films = set()
-    others_index = {}
-    others_ratings = []
-    my_ratings = {}
+    indexes_dict = {}
+    ratings_list = []
 
     i = 0
     directory = fp
@@ -65,40 +94,40 @@ def getMatrices(fp, myfile):
         for film in ratings.keys(): #all movies represented in all_films
             all_films.add(film)
 
-        if filename == myfile: #but only ratings get represented in the other data structs
-            my_ratings = ratings
-            continue
-
-        others_index[i] = filename #this is just for debug, i may remove it for clarity later
-        others_ratings.append(ratings)
+        indexes_dict[i] = filename
+        ratings_list.append(ratings)
 
         i = i + 1
 
     all_films = sorted(all_films)
 
-    #print(all_films)
-
     #creating matrices
-    others_matrix = np.zeros((len(others_ratings), len(all_films)))
-    my_matrix = np.zeros((1, len(all_films)))
+    ratings_matrix = np.zeros((len(ratings_list), len(all_films)))
 
-    for i in range(len(others_ratings)):
+    for i in range(len(ratings_list)):
         for j in range(len(all_films)):
-            if all_films[j] in others_ratings[i]:
-                others_matrix[i,j] = others_ratings[i][all_films[j]]
+            if all_films[j] in ratings_list[i]:
+                ratings_matrix[i,j] = ratings_list[i][all_films[j]]
 
-    for i in range(len(all_films)):
-        if all_films[i] in my_ratings:
-            my_matrix[0,i] = my_ratings[all_films[i]]
+    return ratings_matrix, indexes_dict, all_films
 
-    #print(others_index)
+##### Tests
 
-    return my_matrix, others_matrix
-
-"""
 test_fp = r'/Users/andrew/Documents/PROJ/dataset/ratings/'
-test_myfile = 'me.csv'
 
-mine, theirs = getMatrices(test_fp, test_myfile)
-print(theirs)
-"""
+A, who, films = getMatrices(test_fp)
+
+U,S,V_T = np.linalg.svd(A)
+
+s_1 = S[0]
+u_1 = U[:,0]
+v_1 = V_T[0,:]
+
+#verify reshapes too
+u_1 = np.reshape(u_1,(u_1.size, 1))
+v_1 = np.reshape(v_1,(1, v_1.size))
+
+A_r = np.matmul(s_1 * u_1, v_1)
+print(A_r)
+
+#aight cool now iterate a bunch and then we can approximate cool
