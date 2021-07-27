@@ -2,10 +2,10 @@
 
 A proof-of-concept reccomendation algorithm for Letterboxd users.
 
-TODO
+To Do:
 
-[Fri] Do rank-1 approximations iteration (maybe with the matlab program?) and do SVD decompositon to find recommendations
-
-[Mon] Backup Day
-
-http://letterboxd.com/
+-Comment functions
+-turn reccomendation into function
+-Weight/rank only movies seen by everyone on your list? 75% of list? skip otherwise?
+-refactor to use RSS feed diary scraper api? https://github.com/zaccolley/letterboxd
+-begin semantic usage
