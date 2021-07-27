@@ -10,6 +10,7 @@
 import csv
 import os
 import numpy as np
+import copy
 
 #####
 #
@@ -111,23 +112,87 @@ def getMatrices(fp):
 
     return ratings_matrix, indexes_dict, all_films
 
+
+def rank1ApproximateOnce(A, original):
+    U,S,V_T = np.linalg.svd(A)
+
+    s_1 = S[0]
+    u_1 = U[:,0]
+    v_1 = V_T[0,:]
+
+    #need to be 2-dimensional to do matrix multiplication
+    u_1 = np.reshape(u_1,(u_1.size, 1))
+    v_1 = np.reshape(v_1,(1, v_1.size))
+
+    #rank 1 approximation (according to my linear algebra notes)
+    A_r = np.matmul(s_1 * u_1, v_1)
+
+    row,col = np.shape(A_r)
+    for i in range(row):
+        for j in range(col):
+            if original[i,j] != 0:
+                A_r[i,j] = original[i,j]
+    return A_r
+
+def rank1Approximate(A):
+    old = A
+    new = copy.deepcopy(old)
+    diff = float('inf')
+    while diff > (1 * 10 ** -5):
+        new = rank1ApproximateOnce(old, A)
+        diff = np.sum(np.absolute(new - old))
+        old = new
+    return new
+
 ##### Tests
 
 test_fp = r'/Users/andrew/Documents/PROJ/dataset/ratings/'
 
-A, who, films = getMatrices(test_fp)
+the_matrix, who, films = getMatrices(test_fp)
 
-U,S,V_T = np.linalg.svd(A)
+#print(who)
 
-s_1 = S[0]
-u_1 = U[:,0]
-v_1 = V_T[0,:]
+recc = rank1Approximate(the_matrix)
+my_ratings = the_matrix[3,:]
+my_recc = recc[3,:]
 
-#verify reshapes too
-u_1 = np.reshape(u_1,(u_1.size, 1))
-v_1 = np.reshape(v_1,(1, v_1.size))
+print("Here's your recommendations, Andrew: ")
 
-A_r = np.matmul(s_1 * u_1, v_1)
-print(A_r)
+total = 0
+while total < 5:
+    index = np.argmax(my_recc)
+    if my_ratings[index] == 0:
+        line = '\t' + str(total + 1) + ') ' + films[index] 
+        line = line + '\t| Expected Rating: ' + str(round(my_recc[index],2))
+        print(line)
+        total = total + 1
+    my_recc[index] = float('-inf')
+
+
+"""
+Here's your recommendations, Andrew: 
+        Rank) Title (Year)              | Expected Rating
+
+        1) Fantastic Planet (1973)      | 9.57
+        2) Schindler's List (1993)      | 9.57
+        3) Angel (1937)                 | 9.02
+        4) Autumn Sonata (1978)         | 9.02
+        5) Jaws (1975)                  | 9.02
+"""
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
 
 #aight cool now iterate a bunch and then we can approximate cool
