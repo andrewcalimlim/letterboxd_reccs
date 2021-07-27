@@ -13,3 +13,5 @@ To Do:
 -refactor to use RSS feed diary scraper api? https://github.com/zaccolley/letterboxd
 
 -begin semantic usage
+
+-look into database usage here: https://www.kaggle.com/andrshernndez/letterboxd-movie-data-analysis
