@@ -3,7 +3,7 @@
 # Name: Andrew Calimlim
 # UNI: amc2391
 # Class: COMS 4901
-# Date: 23 Jul 2021
+# Date: 2 Aug 2021
 #
 #####
 
@@ -11,63 +11,52 @@ import csv
 import os
 import numpy as np
 import copy
+import feedparser
 
 #####
 #
 # Input:
-# A csv file name 
+# A Letterboxd username
 # 
 # Function: 
-# Parses file by commas
-# into an actual dictionary of ratings with unique film title (year) keys
-# Overwrites key values with most recent ratings since csv file is ordered by date
+# Gets RSS Feed for a Lbxd user and iterates over the last ~50 entries, ignoring lists and unrated entries
 # 
 # Output:
-# Dictionary of ratings
+# Dictionary of ratings from that user
 #
 #####
 
-def getRatingsDict(file_name):
+def getRatingsDict(username):
     ratings = {}
 
-    file_path = 'dataset/ratings/' + file_name
-    with open(file_path, newline='\n') as csvfile:
-        boxd_reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+    URL = 'https://letterboxd.com/' + username + '/rss/'
 
-        #iterate per line (comma separated)
-        for entry in boxd_reader:
-            
-            #skip the header    
-            if entry[0] == 'Date':
-                continue
-            
-            #handling commas in title
-            if len(entry) > 5:
-                name = ','.join(entry[1:-3])
-                name = name[1:-1] #stripping quotation marks?
-                year = entry[3]
-                stars = entry[-1] #ratings is taken
-        
-            #no commas in title
-            else:
-                name = entry[1]
-                year = entry[2]
-                stars = entry[4]
+    NewsFeed = feedparser.parse(URL)
 
-            key = name + ' (' + year + ')'
+    for entry in NewsFeed.entries: #parse all existing entries
 
-            ratings[key] = float(stars) * 2 #not a string, also /10
+        # this key dne for list entries or unrated entries, which we ignore
+        if 'letterboxd_memberrating' not in entry.keys():
+            continue
+
+        title = entry['letterboxd_filmtitle']
+        year = entry['letterboxd_filmyear']
+        stars = entry['letterboxd_memberrating']
+
+        key = title + ' (' + year + ')'
+
+        ratings[key] = float(stars) * 2 #not a string, also /10
     
     return ratings
 
 ######
 #
 # Input:
-# A file path of csv files
-#
+# A list of usernames (string format)
+
 #
 # Function:
-# turns the csv files into an alphabetized matrix of ratings
+# turns the list of strings into an alphabetized matrix of ratings
 # each user is a row, and each column is a film
 # ratings are from 1-10, 0 indicates unseen (unrated viewings don't appear in ratings)
 # how are we supposed to know how you feel about a movie without a rating???
@@ -80,22 +69,21 @@ def getRatingsDict(file_name):
 #
 ######
 
-def getMatrices(fp):
+def getMatrices(users):
 
     all_films = set()
     indexes_dict = {}
     ratings_list = []
 
     i = 0
-    directory = fp
-    for filename in os.listdir(directory): #iterating per file
+    for username in users:
 
-        ratings = getRatingsDict(filename) #parsing ratings csv file into ratings dict
+        ratings = getRatingsDict(username) #parsing ratings csv file into ratings dict
 
         for film in ratings.keys(): #all movies represented in all_films
             all_films.add(film)
 
-        indexes_dict[i] = filename
+        indexes_dict[i] = username
         ratings_list.append(ratings)
 
         i = i + 1
@@ -112,6 +100,22 @@ def getMatrices(fp):
 
     return ratings_matrix, indexes_dict, all_films
 
+
+######
+#
+# Input:
+# - A matrix to do a rank1 approximation of
+# - The original matrix (to reinstate existing values from)
+#
+# Function:
+# Does a single rank 1 approximation of and then reinstates 
+# existing values from the original
+#
+#
+# Output:
+# - A rank 1 approximation (1 iteration)
+#
+######
 
 def rank1ApproximateOnce(A, original):
     U,S,V_T = np.linalg.svd(A)
@@ -134,6 +138,24 @@ def rank1ApproximateOnce(A, original):
                 A_r[i,j] = original[i,j]
     return A_r
 
+######
+#
+# Input:
+# A convergence on rank 1 approximations of a matrix
+#
+#
+# Function:
+# 
+# Iteratively rank 1 approximates a matrix until 
+# a total 1e-5 difference in iteration outputs is reached
+#
+#
+#
+# Output:
+# - An approximation of all possible ratings (via SVD)
+#
+######
+
 def rank1Approximate(A):
     old = A
     new = copy.deepcopy(old)
@@ -146,15 +168,13 @@ def rank1Approximate(A):
 
 ##### Tests
 
-test_fp = r'/Users/andrew/Documents/PROJ/dataset/ratings/'
+test_users = ['hemaglox', 'samuelio', 'jasonc8106', 'm3hr', 'hhodaie']
 
-the_matrix, who, films = getMatrices(test_fp)
-
-#print(who)
+the_matrix, who, films = getMatrices(test_users)
 
 recc = rank1Approximate(the_matrix)
-my_ratings = the_matrix[3,:]
-my_recc = recc[3,:]
+my_ratings = the_matrix[0,:]
+my_recc = recc[0,:]
 
 print("Here's your recommendations, Andrew: ")
 
@@ -179,20 +199,3 @@ Here's your recommendations, Andrew:
         4) Autumn Sonata (1978)         | 9.02
         5) Jaws (1975)                  | 9.02
 """
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-
-
-#aight cool now iterate a bunch and then we can approximate cool
