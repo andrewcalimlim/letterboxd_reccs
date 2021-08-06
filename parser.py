@@ -7,8 +7,6 @@
 #
 #####
 
-import csv
-import os
 import numpy as np
 import copy
 import feedparser
@@ -166,36 +164,79 @@ def rank1Approximate(A):
         old = new
     return new
 
+######
+#
+# Input:
+# Key and dictionary
+#
+# Function:
+# 
+# Gets first key of value
+# Function taken from https://www.geeksforgeeks.org/python-get-key-from-value-in-dictionary/
+# (I'm lazy)
+#
+# Output:
+# 
+# First key of value (or None if DNE)
+#
+######
+
+def get_key(val, my_dict):
+    for key, value in my_dict.items():
+         if val == value:
+             return key
+
+    return None
+
+######
+#
+# Input:
+# original matrix (with zero scores)
+# approximate matrix (rank 1 approximated)
+# row mappings of usernames from the above matrices
+# col mappings of films from the above matrices
+#
+# Function:
+# Grabs top 5 recommendations based on rating
+#
+# Output:
+# 
+# Printable list of the recommended films with estimated rating
+#
+######
+
+def recommendation(original, approximate, who, films, my_name):
+
+    my_index = get_key(my_name, who)
+
+    my_ratings = original[my_index,:]
+    my_recc = approximate[my_index,:]
+
+    print(np.shape(my_recc))
+
+    print(np.shape(my_ratings))
+
+    final = []
+
+    total = 0
+    while total < 5:
+        index = np.argmax(my_recc)
+        if my_ratings[index] == 0:
+            line = '\t' + str(total + 1) + ') ' + films[index] 
+            line = line + '\t| Expected Rating: ' + str(round(my_recc[index],2))
+            final.append(line)
+            total = total + 1
+        my_recc[index] = float('-inf')
+    return final
+
+
 ##### Tests
 
 test_users = ['hemaglox', 'samuelio', 'jasonc8106', 'm3hr', 'hhodaie']
 
-the_matrix, who, films = getMatrices(test_users)
+raw_scores, who, films = getMatrices(test_users)
 
-recc = rank1Approximate(the_matrix)
-my_ratings = the_matrix[0,:]
-my_recc = recc[0,:]
+scores = rank1Approximate(raw_scores)
 
-print("Here's your recommendations, Andrew: ")
+reccs = recommendation(raw_scores, scores, who, films, 'hemaglox')
 
-total = 0
-while total < 5:
-    index = np.argmax(my_recc)
-    if my_ratings[index] == 0:
-        line = '\t' + str(total + 1) + ') ' + films[index] 
-        line = line + '\t| Expected Rating: ' + str(round(my_recc[index],2))
-        print(line)
-        total = total + 1
-    my_recc[index] = float('-inf')
-
-
-"""
-Here's your recommendations, Andrew: 
-        Rank) Title (Year)              | Expected Rating
-
-        1) Fantastic Planet (1973)      | 9.57
-        2) Schindler's List (1993)      | 9.57
-        3) Angel (1937)                 | 9.02
-        4) Autumn Sonata (1978)         | 9.02
-        5) Jaws (1975)                  | 9.02
-"""
