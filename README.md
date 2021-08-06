@@ -4,14 +4,5 @@ A proof-of-concept reccomendation algorithm for Letterboxd users.
 
 To Do:
 
--Comment functions
-
--turn reccomendation into function
-
--Weight/rank only movies seen by everyone on your list? 75% of list? skip otherwise?
-
--refactor to use RSS feed diary scraper api? https://github.com/zaccolley/letterboxd
-
--begin semantic usage
-
--look into database usage here: https://www.kaggle.com/andrshernndez/letterboxd-movie-data-analysis
+-Datetime file to check when was the last update
+-get more users (/r/criterion, ktt2 film section, columbia group chat
