@@ -3,13 +3,15 @@
 # Name: Andrew Calimlim
 # UNI: amc2391
 # Class: COMS 4901
-# Date: 2 Aug 2021
+# Date: 6 Aug 2021
 #
 #####
 
 import numpy as np
 import copy
 import feedparser
+import json
+import os
 
 #####
 #
@@ -54,7 +56,7 @@ def getRatingsDict(username):
 
 #
 # Function:
-# turns the list of strings into an alphabetized matrix of ratings
+# fetches RSS feed for users in list and parses them into an alphabetized matrix of ratings 
 # each user is a row, and each column is a film
 # ratings are from 1-10, 0 indicates unseen (unrated viewings don't appear in ratings)
 # how are we supposed to know how you feel about a movie without a rating???
@@ -76,7 +78,7 @@ def getMatrices(users):
     i = 0
     for username in users:
 
-        ratings = getRatingsDict(username) #parsing ratings csv file into ratings dict
+        ratings = updateRatingsDict(username) #parsing ratings csv file into ratings dict
 
         for film in ratings.keys(): #all movies represented in all_films
             all_films.add(film)
@@ -212,9 +214,9 @@ def recommendation(original, approximate, who, films, my_name):
     my_ratings = original[my_index,:]
     my_recc = approximate[my_index,:]
 
-    print(np.shape(my_recc))
+    #print(np.shape(my_recc))
 
-    print(np.shape(my_ratings))
+    #print(np.shape(my_ratings))
 
     final = []
 
@@ -229,6 +231,36 @@ def recommendation(original, approximate, who, films, my_name):
         my_recc[index] = float('-inf')
     return final
 
+######
+#
+# Input:
+# letterbox username
+#
+# Function:
+# basically getRatingsDict but with json file saving and loading capacity, will now
+# accumulate ratings over time
+#
+# Output:
+# 
+# Dictionary of ratings
+#
+
+
+def updateRatingsDict(username):
+    fp = 'ratings/' + username + '_ratings.json'
+    most_recent = getRatingsDict(username)
+    if os.path.isfile(fp):
+        existing = json.load(open(fp))
+
+        for film in most_recent.keys():
+            existing[film] = most_recent[film]
+        
+        json.dump(existing, open(fp, 'w'))
+
+        return existing  
+    else:
+        json.dump(most_recent, open(fp, 'w'))
+        return most_recent
 
 ##### Tests
 
@@ -239,4 +271,8 @@ raw_scores, who, films = getMatrices(test_users)
 scores = rank1Approximate(raw_scores)
 
 reccs = recommendation(raw_scores, scores, who, films, 'hemaglox')
+
+
+
+
 
