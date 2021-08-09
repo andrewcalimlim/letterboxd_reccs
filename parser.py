@@ -12,6 +12,7 @@ import copy
 import feedparser
 import json
 import os
+from datetime import datetime
 
 #####
 #
@@ -87,7 +88,7 @@ def getMatrices(users):
         ratings_list.append(ratings)
 
         i = i + 1
-
+    saveUpdateTime()
     all_films = sorted(all_films)
 
     #creating matrices
@@ -245,34 +246,85 @@ def recommendation(original, approximate, who, films, my_name):
 # Dictionary of ratings
 #
 
-
 def updateRatingsDict(username):
+    # gonna be saving or loading to this file location no matter what
     fp = 'ratings/' + username + '_ratings.json'
-    most_recent = getRatingsDict(username)
-    if os.path.isfile(fp):
-        existing = json.load(open(fp))
+    
+    # if no file exists, just pull most recent, save it, and send it
+    if not os.path.isfile(fp):
+        print(fp + ' does not exist, creating new data file..')
+        most_recent = getRatingsDict(username)
+        saveDict(most_recent, fp)
+        return most_recent
+    
+    # file exists from here on out
 
+    #daily pull yo
+    if lastUpdateWas() > 24.0: #last update was more than 24 hrs ago
+        print("update beginning, adding to data file: " + fp)
+        # pull existing ratings and merge with new ratings
+        existing = loadDict(fp)
+
+        most_recent = getRatingsDict(username)
         for film in most_recent.keys():
             existing[film] = most_recent[film]
         
-        json.dump(existing, open(fp, 'w'))
+        existing_merged = existing
+        saveDict(existing_merged, fp)
+        return existing_merged 
 
-        return existing  
-    else:
-        json.dump(most_recent, open(fp, 'w'))
-        return most_recent
+    else: #last update was not more than 24 hrs ago
+        print("update too recent, loading from file: " + fp)
+        existing = loadDict(fp)
+        return existing
+
+def loadDict(fp):
+    return json.load(open(fp))
+
+def saveDict(dict, fp):
+    json.dump(dict, open(fp, 'w'))
+
+def currentTimeObj():
+    return datetime.now()
+
+def currentTimeStr():
+    return datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+def saveUpdateTime():
+    now = currentTimeStr()
+    lu = open("last_update.txt", 'w')
+    lu.write(now)
+    lu.close()
+    return now
+
+def loadUpdateTime():
+    if not os.path.isfile('last_update.txt'):
+        return saveUpdateTime()
+
+    lu_read = open("last_update.txt", "r")
+    then = datetime.strptime(lu_read.read(), "%d/%m/%Y %H:%M:%S")
+    return then
+
+def lastUpdateWas():
+    now = currentTimeObj()
+    then = loadUpdateTime()
+    #print(type(then))
+    diff = now - then
+    diff_s = diff.total_seconds()
+    diff_h = divmod(diff_s, 3600)[0]
+    return diff_h
+
 
 ##### Tests
 
-test_users = ['hemaglox', 'samuelio', 'jasonc8106', 'm3hr', 'hhodaie']
+
+
+test_users = ['hemaglox', 'samuelio', 'jasonc8106', 'm3hr', 'hhodaie', 'zaneth']
 
 raw_scores, who, films = getMatrices(test_users)
 
 scores = rank1Approximate(raw_scores)
 
 reccs = recommendation(raw_scores, scores, who, films, 'hemaglox')
-
-
-
 
 
