@@ -226,8 +226,9 @@ def recommendation(original, approximate, who, films, my_name):
     while total < 5:
         index = np.argmax(my_recc)
         if my_ratings[index] == 0:
-            line = '\t' + str(total + 1) + ') ' + films[index] 
-            line = line + '\t| Expected Rating: ' + str(round(my_recc[index],2))
+            line = '\t[' + str(total + 1) + ']: ' + films[index] 
+            #line = line + '\t| Expected Rating: ' + str(round(my_recc[index],2))
+            # for debug, see ratings
             final.append(line)
             total = total + 1
         my_recc[index] = float('-inf')
@@ -318,7 +319,7 @@ def lastUpdateWas():
 
 
 ##### Tests
-
+"""
 users_file = open("users.txt", "r")
 
 users_list = []
@@ -340,6 +341,6 @@ reccs = recommendation(raw_scores, scores, who, films, 'hemaglox')
 for line in reccs:
     print(line)
 #print(reccs)
-
+"""
 
 

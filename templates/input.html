@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ROLF</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <h1>Recommendations Of Letterboxd Films (ROLF)</h1>
+            <p>Created by Andrew Calimlim (andr3wcalimlim@gmail.com) </p>
+
+            <hr>
+            
+            <p>Capable of giving 5 film recommendations! Just fill out the following information: </p>
+
+            <form action = "http://localhost:5000/output" method = "post">
+                <label for="you">Your Letterboxd Username:</label><br>
+                <input type="text" id="you" name="you"><br>
+                
+                <p>Now, provide a list of Letterboxd usernames that you want your recommendations based off their ratings. (one username per line).</p>
+        
+                <p>Usernames can be found in the URL of any Letterboxd profile.</p>
+        
+                <label for="usernames">Usernames of Other Users:</label><br>
+                <textarea name="usernames" cols="20" rows="10"></textarea></br>
+        
+                <input type="submit" value="Recommend Me!">
+          </form>
+
+        </div>
+     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    
+</body>
+</html>
