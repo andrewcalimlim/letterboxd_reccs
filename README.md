@@ -4,5 +4,5 @@ A proof-of-concept reccomendation algorithm for Letterboxd users.
 
 To Do:
 
---dynamic webform (send arrays to and from)
---ask dean for degree app
+--host program on cloud or whatever
+--fill out dean's app
