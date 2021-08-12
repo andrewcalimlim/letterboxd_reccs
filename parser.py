@@ -161,10 +161,11 @@ def rank1Approximate(A):
     old = A
     new = copy.deepcopy(old)
     diff = float('inf')
-    while diff > (1 * 10 ** -5):
+    while diff > (10):
         new = rank1ApproximateOnce(old, A)
         diff = np.sum(np.absolute(new - old))
         old = new
+        #print(diff)
     return new
 
 ######
@@ -315,16 +316,30 @@ def lastUpdateWas():
     return diff_h
 
 
+
 ##### Tests
 
+users_file = open("users.txt", "r")
 
+users_list = []
+for line in users_file:
+    stripped_line = line.rstrip()
+    users_list.append(stripped_line)
 
-test_users = ['hemaglox', 'samuelio', 'jasonc8106', 'm3hr', 'hhodaie', 'zaneth']
+#print(users_list)
 
-raw_scores, who, films = getMatrices(test_users)
+#test_users = ['hemaglox', 'samuelio', 'jasonc8106', 'm3hr', 'hhodaie', 'zaneth']
 
+raw_scores, who, films = getMatrices(users_list)
+print("approximating..")
 scores = rank1Approximate(raw_scores)
 
 reccs = recommendation(raw_scores, scores, who, films, 'hemaglox')
+
+
+for line in reccs:
+    print(line)
+#print(reccs)
+
 
 
