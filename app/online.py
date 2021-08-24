@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
-from .parser import *
+from parser import * #for local hosting test
+#from .parser import * #for Heroku web hosting
 
 app = Flask(__name__)
 
@@ -12,12 +13,14 @@ def output():
    if request.method == 'POST':
         you = request.form['you']
         usernames = request.form['usernames']
+        convergence = float(request.form['converge'])
+
         usernames = usernames.split()
         usernames.append(you)
 
         raw_scores, who, films = getMatrices(usernames)
         print("approximating..")
-        scores = rank1Approximate(raw_scores)
+        scores = rank1Approximate(raw_scores, convergence)
 
         reccs = recommendation(raw_scores, scores, who, films, you)
 

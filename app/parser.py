@@ -157,15 +157,18 @@ def rank1ApproximateOnce(A, original):
 #
 ######
 
-def rank1Approximate(A):
+def rank1Approximate(A, converge):
     old = A
     new = copy.deepcopy(old)
     diff = float('inf')
-    while diff > (10):
+    i = 0
+    while diff > converge:
         new = rank1ApproximateOnce(old, A)
         diff = np.sum(np.absolute(new - old))
         old = new
+        i = i + 1
         #print(diff)
+    print("total iterations: " + str(i))
     return new
 
 ######
@@ -226,8 +229,8 @@ def recommendation(original, approximate, who, films, my_name):
     while total < 5:
         index = np.argmax(my_recc)
         if my_ratings[index] == 0:
-            line = '\t[' + str(total + 1) + ']: ' + films[index] 
-            #line = line + '\t| Expected Rating: ' + str(round(my_recc[index],2))
+            #line = '\t[' + str(total + 1) + ']: ' + films[index] 
+            line = '\t[' + str(total + 1) + ']: ' + films[index] + ' | Expected Rating: ' + str(round(my_recc[index],2))
             # for debug, see ratings
             final.append(line)
             total = total + 1
@@ -315,32 +318,3 @@ def lastUpdateWas():
     diff_s = diff.total_seconds()
     diff_h = divmod(diff_s, 3600)[0]
     return diff_h
-
-
-
-##### Tests
-"""
-users_file = open("users.txt", "r")
-
-users_list = []
-for line in users_file:
-    stripped_line = line.rstrip()
-    users_list.append(stripped_line)
-
-#print(users_list)
-
-#test_users = ['hemaglox', 'samuelio', 'jasonc8106', 'm3hr', 'hhodaie', 'zaneth']
-
-raw_scores, who, films = getMatrices(users_list)
-print("approximating..")
-scores = rank1Approximate(raw_scores)
-
-reccs = recommendation(raw_scores, scores, who, films, 'hemaglox')
-
-
-for line in reccs:
-    print(line)
-#print(reccs)
-"""
-
-

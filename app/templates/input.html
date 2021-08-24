@@ -15,7 +15,13 @@
             
             <p>Capable of giving 5 film recommendations! Just fill out the following information: </p>
 
+
+            <!--
+            for the site
             <form action = "https://rolfrolf.herokuapp.com/output" method = "post">
+            -->
+
+            <form action = "http://localhost:5000/output" method = "post">
                 <label for="you">Your Letterboxd Username:</label><br>
                 <input type="text" id="you" name="you"><br>
                 
@@ -25,6 +31,9 @@
         
                 <label for="usernames">Usernames of Other Users:</label><br>
                 <textarea name="usernames" cols="20" rows="10"></textarea></br>
+
+                <label for="converge">Convergence value:</label><br>
+                <input type="text" id="converge" name="converge" value="10"></br>
         
                 <input type="submit" value="Recommend Me!">
           </form>
