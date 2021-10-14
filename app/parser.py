@@ -1,9 +1,5 @@
 #####
-#
-# Name: Andrew Calimlim
-# UNI: amc2391
-# Class: COMS 4901
-# Date: 6 Aug 2021
+# Written by Andrew Calimlim
 #
 #####
 
@@ -79,7 +75,7 @@ def getMatrices(users):
     i = 0
     for username in users:
 
-        ratings = updateRatingsDict(username) #parsing ratings csv file into ratings dict
+        ratings = getRatingsDict(username) #parsing ratings csv file into ratings dict
 
         for film in ratings.keys(): #all movies represented in all_films
             all_films.add(film)
@@ -88,7 +84,6 @@ def getMatrices(users):
         ratings_list.append(ratings)
 
         i = i + 1
-    saveUpdateTime()
     all_films = sorted(all_films)
 
     #creating matrices
@@ -168,7 +163,7 @@ def rank1Approximate(A, converge):
         old = new
         i = i + 1
         #print(diff)
-    print("total iterations: " + str(i))
+    #print("total iterations: " + str(i))
     return new
 
 ######
@@ -202,6 +197,7 @@ def get_key(val, my_dict):
 # approximate matrix (rank 1 approximated)
 # row mappings of usernames from the above matrices
 # col mappings of films from the above matrices
+# string indicating who in the row mappings you want to recommend to
 #
 # Function:
 # Grabs top 5 recommendations based on rating
@@ -212,7 +208,7 @@ def get_key(val, my_dict):
 #
 ######
 
-def recommendation(original, approximate, who, films, my_name):
+def recommendation(original, approximate, who, films, seen_list, my_name):
 
     my_index = get_key(my_name, who)
 
@@ -225,96 +221,31 @@ def recommendation(original, approximate, who, films, my_name):
 
     final = []
 
+    #accounts for any movies seen but not rated (recently)
+    for seen_title in seen_list:
+        seen_dex = films.index(seen_title)
+        my_ratings[seen_dex] = 1 #not zero, all that matters
+
     total = 0
     while total < 5:
         index = np.argmax(my_recc)
         if my_ratings[index] == 0:
-            #line = '\t[' + str(total + 1) + ']: ' + films[index] 
-            line = '\t[' + str(total + 1) + ']: ' + films[index] + ' | Expected Rating: ' + str(round(my_recc[index],2))
+            line = '\t[' + str(total + 1) + ']: ' + films[index] 
+            #line = '\t[' + str(total + 1) + ']: ' + films[index] + ' | Expected Rating: ' + str(round(my_recc[index],2))
             # for debug, see ratings
             final.append(line)
             total = total + 1
         my_recc[index] = float('-inf')
     return final
 
-######
-#
-# Input:
-# letterbox username
-#
-# Function:
-# basically getRatingsDict but with json file saving and loading capacity, will now
-# accumulate ratings over time
-#
-# Output:
-# 
-# Dictionary of ratings
-#
+# TE$TING ASAP ROCKY
 
-def updateRatingsDict(username):
-    # gonna be saving or loading to this file location no matter what
-    fp = 'ratings/' + username + '_ratings.json'
-    
-    # if no file exists, just pull most recent, save it, and send it
-    if not os.path.isfile(fp):
-        print(fp + ' does not exist, creating new data file..')
-        most_recent = getRatingsDict(username)
-        saveDict(most_recent, fp)
-        return most_recent
-    
-    # file exists from here on out
+test_users = ['hemaglox', 'hhodaie', 'samuelio', 'jasonc8106', 'm3hr']
+ratings_incomplete, row_user, col_film = getMatrices(test_users)
+ratings_approx = rank1Approximate(ratings_incomplete, 0.1)
+saw_it = ['American Psycho (2000)', 'Amores Perros (2000)', 'Irreversible (2002)', 'Princess Mononoke (1997)', 'Burning (2018)']
+#saw_it = []
+sus = recommendation(ratings_incomplete, ratings_approx, row_user, col_film, saw_it, "hemaglox")
 
-    #daily pull yo
-    if lastUpdateWas() > 24.0: #last update was more than 24 hrs ago
-        print("update beginning, adding to data file: " + fp)
-        # pull existing ratings and merge with new ratings
-        existing = loadDict(fp)
-
-        most_recent = getRatingsDict(username)
-        for film in most_recent.keys():
-            existing[film] = most_recent[film]
-        
-        existing_merged = existing
-        saveDict(existing_merged, fp)
-        return existing_merged 
-
-    else: #last update was not more than 24 hrs ago
-        print("update too recent, loading from file: " + fp)
-        existing = loadDict(fp)
-        return existing
-
-def loadDict(fp):
-    return json.load(open(fp))
-
-def saveDict(dict, fp):
-    json.dump(dict, open(fp, 'w'))
-
-def currentTimeObj():
-    return datetime.now()
-
-def currentTimeStr():
-    return datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
-def saveUpdateTime():
-    now = currentTimeStr()
-    lu = open("last_update.txt", 'w')
-    lu.write(now)
-    lu.close()
-    return now
-
-def loadUpdateTime():
-    if not os.path.isfile('last_update.txt'):
-        return saveUpdateTime()
-
-    lu_read = open("last_update.txt", "r")
-    then = datetime.strptime(lu_read.read(), "%d/%m/%Y %H:%M:%S")
-    return then
-
-def lastUpdateWas():
-    now = currentTimeObj()
-    then = loadUpdateTime()
-    #print(type(then))
-    diff = now - then
-    diff_s = diff.total_seconds()
-    diff_h = divmod(diff_s, 3600)[0]
-    return diff_h
+for line in sus:
+    print(line)
