@@ -12,20 +12,47 @@
             <p>Created by Andrew Calimlim (andr3wcalimlim@gmail.com) </p>
             <hr>
 
-            <p>Hello {{name}}, here are your top 5 recommendations: <br>
-                {{film1}}<br>
-                {{film2}}<br>
-                {{film3}}<br>
-                {{film4}}<br>
-                {{film5}}<br>
-            </p>
-            
             <!--
             for the site
             <form action = "https://rolfrolf.herokuapp.com/">
             -->
+
             <form action = "http://localhost:5000/">
-                <p><input type = "submit" value = "Return" /></p>
+                <p><input type = "submit" value = "Home" /></p>
+             </form>
+
+            <p>Hello {{name}}, here are your top 5 recommendations: <br>
+
+            </p>
+            
+             <form action = "http://localhost:5000/test" method = "post">
+
+                <input class="form-check-input" type="checkbox" name=seen value={{film1}} id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    {{film1}}
+                </label><br>
+
+                <input class="form-check-input" type="checkbox" name=seen value={{film2}} id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    {{film2}}
+                </label><br>
+
+                <input class="form-check-input" type="checkbox" name=seen value={{film3}} id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    {{film3}}
+                </label><br>
+
+                <input class="form-check-input" type="checkbox" name=seen value={{film4}} id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    {{film4}}
+                </label><br>
+
+                <input class="form-check-input" type="checkbox" name=seen value={{film5}} id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    {{film5}}
+                </label><br>
+
+                <p><input type = "submit" value = "Seen It" /></p>
              </form>
 
 
