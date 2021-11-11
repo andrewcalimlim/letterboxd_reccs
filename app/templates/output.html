@@ -9,28 +9,34 @@
     <div class="container-fluid">
         <div class="row">
             <h1>Recommendations Of Letterboxd Films (ROLF)</h1>
-            <p>Created by Andrew Calimlim (andr3wcalimlim@gmail.com) </p>
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="/">R O L F</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                  <div class="navbar-nav">
+                    <a class="nav-item nav-link " href="about">About </a>
+                    <a class="nav-item nav-link " href="/">Home </a>
+                    <a class="nav-item nav-link active disabled" href="">Results</a>
+                  </div>
+                </div>
+            </nav>
+
             <hr>
 
-            <p>Hello {{name}}, here are your top 5 recommendations: <br>
-                {{film1}}<br>
-                {{film2}}<br>
-                {{film3}}<br>
-                {{film4}}<br>
-                {{film5}}<br>
-            </p>
-            
-            <!--
-            for the site
-            <form action = "https://rolfrolf.herokuapp.com/">
-            -->
-            <form action = "http://localhost:5000/">
-                <p><input type = "submit" value = "Return" /></p>
-             </form>
+            <p>Hello {{name}}, here are your top 5 recommendations: <br></p>
 
+            <p>
+                #1: {{film1}} <br>
+                #2: {{film2}} <br>
+                #3: {{film3}} <br>
+                #4: {{film4}} <br>
+                #5: {{film5}}
+            </p>
 
         </div>
-
 
      </div>
 
