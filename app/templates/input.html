@@ -7,21 +7,39 @@
 <body>
 
     <div class="container-fluid">
+
+    </div>
+
+    <div class="container-fluid">
         <div class="row">
-            <h1>Recommendations Of Letterboxd Films (ROLF)</h1>
-            <p>Created by Andrew Calimlim (andr3wcalimlim@gmail.com) </p>
+            <h1>Recommendations Of Letterboxd Films</h1>
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="/">R O L F</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                  <div class="navbar-nav">
+                    <a class="nav-item nav-link " href="about">About </a>
+                    <a class="nav-item nav-link active" href="/">Home </a>
+                    <a class="nav-item nav-link disabled" href="output">Results</a>
+                  </div>
+                </div>
+            </nav>
 
             <hr>
             
             <p>Capable of giving 5 film recommendations! Just fill out the following information: </p>
 
-
             <!--
-            for the site
-            <form action = "https://rolfrolf.herokuapp.com/output" method = "post">
-            -->
+            for testing:
+
 
             <form action = "http://localhost:5000/output" method = "post">
+            -->
+
+            <form action = "https://rolfrolf.herokuapp.com/output" method = "post">
                 <label for="you">Your Letterboxd Username:</label><br>
                 <input type="text" id="you" name="you"><br>
                 
